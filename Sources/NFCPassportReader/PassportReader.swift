@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import OSLog
+// FACEKOM:: Logger is now an internal Proxy
 
 #if !os(macOS)
 import UIKit
@@ -32,7 +32,11 @@ public class PassportReader : NSObject {
     private var bacHandler : BACHandler?
     private var caHandler : ChipAuthenticationHandler?
     private var paceHandler : PACEHandler?
-    private var mrzKey : String = ""
+// FACEKOM:: MODIFICATION BEGIN
+    private var mrzKey : String?
+    private var bacHash : [UInt8]?
+    private var pemKey: String?
+// FACEKOM:: MODIFICATION END
     private var dataAmountToReadOverride : Int? = nil
     
     private var scanCompletedHandler: ((NFCPassportModel?, NFCPassportReaderError?)->())!
@@ -62,10 +66,18 @@ public class PassportReader : NSObject {
         dataAmountToReadOverride = amount
     }
     
-    public func readPassport( mrzKey : String, tags : [DataGroupId] = [], skipSecureElements : Bool = true, skipCA : Bool = false, skipPACE : Bool = false, customDisplayMessage : ((NFCViewDisplayMessage) -> String?)? = nil) async throws -> NFCPassportModel {
+// FACEKOM:: MODIFICATION BEGIN
+    public func readPassport( mrzKey: String, tags : [DataGroupId] = [], skipSecureElements : Bool = true, skipCA : Bool = false, skipPACE : Bool = false, customDisplayMessage : ((NFCViewDisplayMessage) -> String?)? = nil) async throws -> NFCPassportModel {
+        let hash = calcSHA1Hash( [UInt8](mrzKey.data(using:.utf8)!) )
+        //let subHash = Array(hash[0..<16])
+        let bacHash = hash
+        return try await readPassport(bacHash: bacHash, tags: tags, skipSecureElements: skipSecureElements, skipCA: skipCA, skipPACE: skipPACE, customDisplayMessage: customDisplayMessage)
+    }
+    
+    public func readPassport( bacHash: [UInt8], tags : [DataGroupId] = [], skipSecureElements : Bool = true, skipCA : Bool = false, skipPACE : Bool = false, customDisplayMessage : ((NFCViewDisplayMessage) -> String?)? = nil) async throws -> NFCPassportModel {
         
         self.passport = NFCPassportModel()
-        self.mrzKey = mrzKey
+        self.bacHash = bacHash
         self.skipCA = skipCA
         self.skipPACE = skipPACE
         
@@ -103,6 +115,8 @@ public class PassportReader : NSObject {
             self.nfcContinuation = continuation
         })
     }
+// FACEKOM:: MODIFICATION END
+
 }
 
 @available(iOS 15, *)
@@ -225,7 +239,9 @@ extension PassportReader {
                 Logger.passportReader.info( "Starting Password Authenticated Connection Establishment (PACE)" )
                  
                 let paceHandler = try PACEHandler( cardAccess: cardAccess, tagReader: tagReader )
-                try await paceHandler.doPACE(mrzKey: mrzKey )
+// FACEKOM:: MODIFICATION BEGIN
+                try await paceHandler.doPACE(mrzKey: mrzKey, bacHash:bacHash )
+// FACEKOM:: MODIFICATION END
                 passport.PACEStatus = .success
                 Logger.passportReader.debug( "PACE Succeeded" )
             } catch {
@@ -280,8 +296,10 @@ extension PassportReader {
         self.passport.BACStatus = .failed
 
         self.bacHandler = BACHandler( tagReader: tagReader )
-        try await bacHandler?.performBACAndGetSessionKeys( mrzKey: mrzKey )
-        Logger.passportReader.info( "Basic Access Control (BAC) - SUCCESS!" )
+// FACEKOM:: MODIFICATION BEGIN
+        try await bacHandler?.performBACAndGetSessionKeys( mrzKey: mrzKey, bacHash: bacHash )
+// FACEKOM:: MODIFICATION END
+        Logger.passportReader.debug( "Basic Access Control (BAC) - SUCCESS!" )
 
         self.passport.BACStatus = .success
     }

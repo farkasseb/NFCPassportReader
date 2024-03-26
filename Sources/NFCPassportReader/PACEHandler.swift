@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import OSLog
+// FACEKOM:: Logger is now an internal Proxy
 import OpenSSL
 import CryptoTokenKit
 
@@ -71,8 +71,9 @@ public class PACEHandler {
         self.paceInfo = pi
         isPACESupported = true
     }
-    
-    public func doPACE( mrzKey : String ) async throws {
+
+// FACEKOM:: MODIFICATION BEGIN
+    public func doPACE( mrzKey : String?, bacHash:[UInt8]? ) async throws {
         guard isPACESupported else {
             throw NFCPassportReaderError.NotYetSupported( "PACE not supported" )
         }
@@ -89,7 +90,7 @@ public class PACEHandler {
         keyLength = try paceInfo.getKeyLength()  // Get key length  the enc cipher. Either 128, 192, or 256.
 
         paceKeyType = PACEHandler.MRZ_PACE_KEY_REFERENCE
-        paceKey = try createPaceKey( from: mrzKey )
+        paceKey = try createPaceKey( from: mrzKey ,bacHash:bacHash)
         
         // Temporary logging
         Logger.pace.debug("doPace - inpit parameters" )
@@ -100,7 +101,7 @@ public class PACEHandler {
         Logger.pace.debug("cipherAlg - \(self.cipherAlg)" )
         Logger.pace.debug("digestAlg - \(self.digestAlg)" )
         Logger.pace.debug("keyLength - \(self.keyLength)" )
-        Logger.pace.debug("keyLength - \(mrzKey)" )
+        Logger.pace.debug("keyLength - \(String(describing: mrzKey))" )
         Logger.pace.debug("paceKey - \(binToHexRep(self.paceKey, asArray:true))" )
 
         // First start the initial auth call
@@ -113,6 +114,7 @@ public class PACEHandler {
         try self.paceCompleted( ksEnc: encKey, ksMac: macKey )
         Logger.pace.debug("PACE SUCCESSFUL" )
     }
+// FACEKOM:: MODIFICATION END
     
     /// Handles an error during the PACE process
     /// Logs and stoes the error and returns false to the caller
@@ -579,17 +581,25 @@ extension PACEHandler {
         return [UInt8](data)
     }
 
+// FACEKOM:: MODIFICATION BEGIN
     /// Computes a key seed based on an MRZ key
     /// - Parameter the mrz key
     /// - Returns a encoded key based on the mrz key that can be used for PACE
-    func createPaceKey( from mrzKey: String ) throws -> [UInt8] {
-        let buf: [UInt8] = Array(mrzKey.utf8)
-        let hash = calcSHA1Hash(buf)
-        
-        let smskg = SecureMessagingSessionKeyGenerator()
-        let key = try smskg.deriveKey(keySeed: hash, cipherAlgName: cipherAlg, keyLength: keyLength, nonce: nil, mode: .PACE_MODE, paceKeyReference: paceKeyType)
-        return key
+    func createPaceKey( from mrzKey: String? , bacHash:[UInt8]?) throws -> [UInt8] {
+        if (mrzKey != nil) {
+            let buf: [UInt8] = Array(mrzKey!.utf8)
+            let hash = calcSHA1Hash(buf)
+            
+            let smskg = SecureMessagingSessionKeyGenerator()
+            let key = try smskg.deriveKey(keySeed: hash, cipherAlgName: cipherAlg, keyLength: keyLength, nonce: nil, mode: .PACE_MODE, paceKeyReference: paceKeyType)
+            return key
+        } else {
+            let smskg = SecureMessagingSessionKeyGenerator()
+            let key = try smskg.deriveKey(keySeed: bacHash!, cipherAlgName: cipherAlg, keyLength: keyLength, nonce: nil, mode: .PACE_MODE, paceKeyReference: paceKeyType)
+            return key
+        }
     }
+// FACEKOM:: MODIFICATION END
     
     /// Performs the ECDH PACE GM key agreement protocol by multiplying a private key with a public key
     /// - Parameters:

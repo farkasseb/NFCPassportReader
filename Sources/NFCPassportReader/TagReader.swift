@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import OSLog
+// FACEKOM:: Logger is now an internal Proxy
 
 #if !os(macOS)
 import CoreNFC

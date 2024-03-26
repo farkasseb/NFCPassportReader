@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import OSLog
+// FACEKOM:: Logger is now an internal Proxy
 import OpenSSL
 
 #if !os(macOS)

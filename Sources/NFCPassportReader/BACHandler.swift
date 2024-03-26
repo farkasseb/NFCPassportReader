@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import OSLog
+// FACEKOM:: Logger is now an internal Proxy
 
 #if !os(macOS)
 import CoreNFC
@@ -34,13 +34,15 @@ public class BACHandler {
         self.tagReader = tagReader
     }
 
-    public func performBACAndGetSessionKeys( mrzKey : String ) async throws {
+// FACEKOM:: MODIFICATION BEGIN
+    public func performBACAndGetSessionKeys( mrzKey : String?, bacHash:[UInt8]? ) async throws {
         guard let tagReader = self.tagReader else {
             throw NFCPassportReaderError.NoConnectedTag
         }
         
         Logger.bac.debug( "BACHandler - deriving Document Basic Access Keys" )
-        _ = try self.deriveDocumentBasicAccessKeys(mrz: mrzKey)
+        
+        _ = try self.deriveDocumentBasicAccessKeys(mrz: mrzKey, bacHash:bacHash)
         
         // Make sure we clear secure messaging (could happen if we read an invalid DG or we hit a secure error
         tagReader.secureMessaging = nil
@@ -65,16 +67,24 @@ public class BACHandler {
     }
 
 
-    func deriveDocumentBasicAccessKeys(mrz: String) throws -> ([UInt8], [UInt8]) {
-        let kseed = generateInitialKseed(kmrz:mrz)
-    
-        Logger.bac.debug("Calculate the Basic Access Keys (Kenc and Kmac) using TR-SAC 1.01, 4.2")
-        let smskg = SecureMessagingSessionKeyGenerator()
-        self.ksenc = try smskg.deriveKey(keySeed: kseed, mode: .ENC_MODE)
-        self.ksmac = try smskg.deriveKey(keySeed: kseed, mode: .MAC_MODE)
-                
+    func deriveDocumentBasicAccessKeys(mrz: String?, bacHash:[UInt8]?) throws -> ([UInt8], [UInt8]) {
+        if (mrz != nil) {
+            let kseed = generateInitialKseed(kmrz:mrz!)
+            Logger.bac.debug("Calculate the Basic Access Keys (Kenc and Kmac) using TR-SAC 1.01, 4.2")
+            let smskg = SecureMessagingSessionKeyGenerator()
+            self.ksenc = try smskg.deriveKey(keySeed: kseed, mode: .ENC_MODE)
+            self.ksmac = try smskg.deriveKey(keySeed: kseed, mode: .MAC_MODE)
+        } else {
+            let kseed = bacHash
+            Logger.bac.debug("Calculate the Basic Access Keys (Kenc and Kmac) using TR-SAC 1.01, 4.2")
+            let smskg = SecureMessagingSessionKeyGenerator()
+            self.ksenc = try smskg.deriveKey(keySeed: kseed!, mode: .ENC_MODE)
+            self.ksmac = try smskg.deriveKey(keySeed: kseed!, mode: .MAC_MODE)
+
+        }
         return (ksenc, ksmac)
     }
+// FACEKOM:: MODIFICATION END
     
     ///
     /// Calculate the kseed from the kmrz:

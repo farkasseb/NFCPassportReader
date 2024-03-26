@@ -168,6 +168,8 @@ public class SimpleASN1DumpParser {
         ]
         
         let topItem = parseLines( lines:lines )
-        print( topItem?.debugDescription ?? "" )
+// FACEKOM:: MODIFICATION BEGIN
+        debugPrint( topItem?.debugDescription ?? "" )
+// FACEKOM:: MODIFICATION END
     }
 }

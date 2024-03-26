@@ -5,7 +5,7 @@
 //
 
 import Foundation
-import OSLog
+// FACEKOM:: Logger is now an internal Proxy
 
 @available(iOS 13, macOS 10.15, *)
 public class COM : DataGroup {
