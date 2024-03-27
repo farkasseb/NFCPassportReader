@@ -57,43 +57,44 @@ struct Logger {
     static let pace = Logger(osLogger: os.Logger.pace)
     
     
-    func log(_ message: String) {
+    func log(_ message: @autoclosure () -> String) {
         log(level: .default, message)
     }
     
-    func log(level: OSLogType, _ message: String) {
-        osLogger.log(level: level, "\(message)")
+    func log(level: OSLogType, _ message: () -> String) {
+        let msg = message()
+        osLogger.log(level: level, "\(msg)")
     }
 
-    func trace(_ message: String) {
+    func trace(_ message: @autoclosure () -> String) {
         log(level: .debug, message)
     }
 
-    func debug(_ message: String) {
+    func debug(_ message: @autoclosure () -> String) {
         log(level: .debug, message)
     }
 
-    func info(_ message: String) {
+    func info(_ message: @autoclosure () -> String) {
         log(level: .info, message)
     }
 
-    func notice(_ message: String) {
+    func notice(_ message: @autoclosure () -> String) {
         log(level: .default, message)
     }
 
-    func warning(_ message: String) {
+    func warning(_ message: @autoclosure () -> String) {
         log(level: .error, message)
     }
 
-    func error(_ message: String) {
+    func error(_ message: @autoclosure () -> String) {
         log(level: .error, message)
     }
 
-    func critical(_ message: String) {
+    func critical(_ message: @autoclosure () -> String) {
         log(level: .fault, message)
     }
 
-    func fault(_ message: String) {
+    func fault(_ message: @autoclosure () -> String) {
         log(level: .fault, message)
     }
 }
