@@ -24,7 +24,7 @@ EXTERNAL SOURCES:
     :path: "../.."
 
 SPEC CHECKSUMS:
-  NFCPassportReader: e931c61c189e08a4b4afa0ed4014af19eab2f129
+  NFCPassportReader: e4d53b5a3212d27a6e9330953c5e11a30f3ec97a
   OpenSSL-Universal: 84efb8a29841f2764ac5403e0c4119a28b713346
   QKMRZParser: 6b419b6f07d6bff6b50429b97de10846dc902c29
   QKMRZScanner: cf2348fd6ce441e758328da4adf231ef2b51d769
