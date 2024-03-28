@@ -1,7 +1,7 @@
 Pod::Spec.new do |spec|
 
   spec.name         = "NFCPassportReader"
-  spec.version      = "2.1.1-facekom"
+  spec.version      = "2.1.10"
   spec.summary      = "This package handles reading an NFC Enabled passport using iOS 13 CoreNFC APIS"
 
   spec.homepage     = "https://github.com/TechTeamer/NFCPassportReader"
@@ -10,7 +10,7 @@ Pod::Spec.new do |spec|
   spec.platform = :ios
   spec.ios.deployment_target = "14.0"
 
-  spec.source       = { :git => "https://github.com/TechTeamer/NFCPassportReader.git", :tag => "#{spec.version}" }
+  spec.source       = { :git => "https://github.com/TechTeamer/NFCPassportReader.git", :tag => spec.version} }
 
   spec.source_files  = "Sources/**/*.{swift}"
 
