@@ -1,5 +1,5 @@
 PODS:
-  - NFCPassportReader (2.1.2):
+  - NFCPassportReader (2.1.10):
     - OpenSSL-Universal (= 1.1.2200)
   - OpenSSL-Universal (1.1.2200)
   - QKMRZParser (2.0.0)
@@ -24,7 +24,7 @@ EXTERNAL SOURCES:
     :path: "../.."
 
 SPEC CHECKSUMS:
-  NFCPassportReader: 8e9ea7b7acafe06634868e3cbd62548c748ad2b6
+  NFCPassportReader: af55589b1f414c97b78018956de40dace11d59a4
   OpenSSL-Universal: 6e1ae0555546e604dbc632a2b9a24a9c46c41ef6
   QKMRZParser: 6b419b6f07d6bff6b50429b97de10846dc902c29
   QKMRZScanner: cf2348fd6ce441e758328da4adf231ef2b51d769
