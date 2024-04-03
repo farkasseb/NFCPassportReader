@@ -105,6 +105,26 @@ final class DataGroupParsingTests: XCTestCase {
             XCTAssertEqual(dg12.dateOfIssue, "20180326")
         }
     }
+    
+// FACEKOM:: MODIFICATION BEGIN
+    func testDatagroup13Implemented() {
+        var dg13Tag: UInt8?
+        DataGroupParser.injectDataGroup { name, tag, dataClass in
+            if name == "DG13" && dataClass == NotImplementedDG.self {
+                dg13Tag = tag
+                return DataGroup13.self
+            }
+            return nil
+        }
+        let dgp = DataGroupParser()
+        let _ = DataGroupParser.classes
+        XCTAssertNotNil(dg13Tag)
+                
+        XCTAssertNoThrow(try dgp.tagToDG(dg13Tag!)) { dgClass in
+            XCTAssertTrue(dgClass == DataGroup13.self)
+        }
+    }
+// FACEKOM:: MODIFICATION END
 
     func testDatagroup15Parsing() {
         

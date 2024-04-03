@@ -22,7 +22,9 @@ public class DataGroup14 : DataGroup {
         try super.init(data)
     }
     
-    override func parse(_ data: [UInt8]) throws {
+// FACEKOM:: MODIFICATION BEGIN
+    override public func parse(_ data: [UInt8]) throws {
+// FACEKOM:: MODIFICATION END
         let p = SimpleASN1DumpParser()
         asn1 = try p.parse(data: Data(body))
         

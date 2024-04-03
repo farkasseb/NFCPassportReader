@@ -7,18 +7,23 @@
 import Foundation
 
 @available(iOS 13, macOS 10.15, *)
-public class DataGroup {
-    public var datagroupType : DataGroupId { .Unknown }
+// FACEKOM:: MODIFICATION BEGIN
+open class DataGroup {
+    open var datagroupType : DataGroupId { .Unknown }
+// FACEKOM:: MODIFICATION END
+
     
     /// Body contains the actual data
     public private(set) var body : [UInt8] = []
     
     /// Data contains the whole DataGroup data (as that is what the hash is calculated from
     public private(set) var data : [UInt8] = []
-    
-    var pos = 0
-    
-    required init( _ data : [UInt8] ) throws {
+
+// FACEKOM:: MODIFICATION BEGIN
+    public private(set) var pos = 0
+
+    required public init( _ data : [UInt8] ) throws {
+// FACEKOM:: MODIFICATION END
         self.data = data
         
         // Skip the first byte which is the header byte
@@ -28,11 +33,12 @@ public class DataGroup {
         
         try parse(data)
     }
-    
-    func parse( _ data:[UInt8] ) throws {
+// FACEKOM:: MODIFICATION BEGIN
+    open func parse( _ data:[UInt8] ) throws {
     }
     
-    func getNextTag() throws -> Int {
+    public func getNextTag() throws -> Int {
+// FACEKOM:: MODIFICATION END
         var tag = 0
         
         // Fix for some passports that may have invalid data - ensure that we do have data!
@@ -49,15 +55,17 @@ public class DataGroup {
         }
         return tag
     }
-    
-    func getNextLength() throws -> Int  {
+// FACEKOM:: MODIFICATION BEGIN
+    public func getNextLength() throws -> Int  {
+// FACEKOM:: MODIFICATION END
         let end = pos+4 < data.count ? pos+4 : data.count
         let (len, lenOffset) = try asn1Length([UInt8](data[pos..<end]))
         pos += lenOffset
         return len
     }
-    
-    func getNextValue() throws -> [UInt8] {
+// FACEKOM:: MODIFICATION BEGIN
+    public func getNextValue() throws -> [UInt8] {
+// FACEKOM:: MODIFICATION END
         let length = try getNextLength()
         let value = [UInt8](data[pos ..< pos+length])
         pos += length
