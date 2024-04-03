@@ -19,7 +19,7 @@ Pod::Spec.new do |spec|
   spec.dependency "OpenSSL-Universal", '1.1.2200'
   spec.xcconfig          = { 
     'OTHER_LDFLAGS' => '-weak_framework CryptoKit -weak_framework CoreNFC -weak_framework CryptoTokenKit',
-    'BUILD_LIBRARY_FOR_DISTRIBUTION' => 'YES'
+    'BUILD_LIBRARY_FOR_DISTRIBUTION' => '$(inherited) YES'
   }
 
   spec.pod_target_xcconfig = {
