@@ -73,7 +73,13 @@ public class PACEHandler {
     }
 
 // FACEKOM:: MODIFICATION BEGIN
-    public func doPACE( mrzKey : String?, bacHash:[UInt8]? ) async throws {
+    public func doPACE( mrzKey : String ) async throws {
+        let buf: [UInt8] = Array(mrzKey.utf8)
+        let hash = calcSHA1Hash(buf)
+        try await doPACE(bacHash: hash)
+    }
+    
+    public func doPACE( bacHash:[UInt8] ) async throws {
         guard isPACESupported else {
             throw NFCPassportReaderError.NotYetSupported( "PACE not supported" )
         }
@@ -90,7 +96,7 @@ public class PACEHandler {
         keyLength = try paceInfo.getKeyLength()  // Get key length  the enc cipher. Either 128, 192, or 256.
 
         paceKeyType = PACEHandler.MRZ_PACE_KEY_REFERENCE
-        paceKey = try createPaceKey( from: mrzKey ,bacHash:bacHash)
+        paceKey = try createPaceKey( from: bacHash)
         
         // Temporary logging
         Logger.pace.debug("doPace - inpit parameters" )
@@ -101,7 +107,7 @@ public class PACEHandler {
         Logger.pace.debug("cipherAlg - \(self.cipherAlg)" )
         Logger.pace.debug("digestAlg - \(self.digestAlg)" )
         Logger.pace.debug("keyLength - \(self.keyLength)" )
-        Logger.pace.debug("keyLength - \(String(describing: mrzKey))" )
+        Logger.pace.debug("bacHash - \(bacHash)" )
         Logger.pace.debug("paceKey - \(binToHexRep(self.paceKey, asArray:true))" )
 
         // First start the initial auth call
@@ -585,19 +591,18 @@ extension PACEHandler {
     /// Computes a key seed based on an MRZ key
     /// - Parameter the mrz key
     /// - Returns a encoded key based on the mrz key that can be used for PACE
-    func createPaceKey( from mrzKey: String? , bacHash:[UInt8]?) throws -> [UInt8] {
-        if (mrzKey != nil) {
-            let buf: [UInt8] = Array(mrzKey!.utf8)
-            let hash = calcSHA1Hash(buf)
-            
-            let smskg = SecureMessagingSessionKeyGenerator()
-            let key = try smskg.deriveKey(keySeed: hash, cipherAlgName: cipherAlg, keyLength: keyLength, nonce: nil, mode: .PACE_MODE, paceKeyReference: paceKeyType)
-            return key
-        } else {
-            let smskg = SecureMessagingSessionKeyGenerator()
-            let key = try smskg.deriveKey(keySeed: bacHash!, cipherAlgName: cipherAlg, keyLength: keyLength, nonce: nil, mode: .PACE_MODE, paceKeyReference: paceKeyType)
-            return key
-        }
+    func createPaceKey( from mrzKey: String ) throws -> [UInt8] {
+        let buf: [UInt8] = Array(mrzKey.utf8)
+        let hash = calcSHA1Hash(buf)
+        
+        return try createPaceKey(from: hash)
+    }
+    
+    func createPaceKey(from bacHash:[UInt8]) throws -> [UInt8] {
+        let smskg = SecureMessagingSessionKeyGenerator()
+        let key = try smskg.deriveKey(keySeed: bacHash, cipherAlgName: cipherAlg, keyLength: keyLength, nonce: nil, mode: .PACE_MODE, paceKeyReference: paceKeyType)
+        return key
+        
     }
 // FACEKOM:: MODIFICATION END
     

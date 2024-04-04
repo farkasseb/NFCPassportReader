@@ -188,8 +188,9 @@ public class NFCPassportModel {
     public init() {
         
     }
-    
-    public init( from dump: [String:String] ) {
+// FACEKOM:: MODIFICATION BEGIN
+    public init( from dump: [String:String], parserConfig: ParserConfig? ) {
+// FACEKOM:: MODIFICATION END
         var AAChallenge : [UInt8]?
         var AASignature : [UInt8]?
         for (key,value) in dump {
@@ -201,7 +202,9 @@ public class NFCPassportModel {
                     AAChallenge = bin
                 } else {
                     do {
-                        let dg = try DataGroupParser().parseDG(data: bin)
+// FACEKOM:: MODIFICATION BEGIN
+                        let dg = try DataGroupParser(injectDataGroupHandler: parserConfig?.injectDataGroupHandler).parseDG(data: bin)
+// FACEKOM:: MODIFICATION END
                         let dgId = DataGroupId.getIDFromName(name:key)
                         self.addDataGroup( dgId, dataGroup:dg )
                     } catch {

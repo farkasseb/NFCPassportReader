@@ -175,7 +175,7 @@ extension MainView {
             }
 
             do {
-                let passport = try await passportReader.readPassport( mrzKey: mrzKey, customDisplayMessage:customMessageHandler)
+                let passport = try await passportReader.readPassport( mrzKey: mrzKey, parserConfig: parserCongig, customDisplayMessage:customMessageHandler)
                 
                 if settings.savePassportOnScan {
                     // Save passport

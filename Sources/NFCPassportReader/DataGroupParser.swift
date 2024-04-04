@@ -6,6 +6,10 @@
 
 import OpenSSL
 
+// FACEKOM:: MODIFICATION BEGIN
+public typealias InjectDataGroupHandler = ((_ name: String, _ tag: UInt8, _ dataClass: DataGroup.Type) -> DataGroup.Type?)
+// FACEKOM:: MODIFICATION END
+
 @available(iOS 13, macOS 10.15, *)
 class DataGroupParser {
     
@@ -13,29 +17,33 @@ class DataGroupParser {
     static let tags : [UInt8] = [0x60, 0x61, 0x75, 0x63, 0x76, 0x65, 0x66, 0x67, 0x68, 0x69, 0x6A, 0x6B, 0x6C, 0x6D, 0x6E, 0x6F, 0x70, 0x77]
 
 // FACEKOM:: MODIFICATION BEGIN
-    public typealias DataGroupDescriptor = (name: String, tag: UInt8, class: DataGroup.Type)
     public typealias InjectDataGroupHandler = ((_ name: String, _ tag: UInt8, _ dataClass: DataGroup.Type) -> DataGroup.Type?)
     
-    private static var injectDataGroupHandler: InjectDataGroupHandler?
+    private var injectDataGroupHandler: InjectDataGroupHandler?
     
-    public static func injectDataGroup(_ injectDataGroupHandler: @escaping InjectDataGroupHandler) {
+    init(injectDataGroupHandler: InjectDataGroupHandler? = nil) {
         self.injectDataGroupHandler = injectDataGroupHandler
     }
     
-    static var classes : [DataGroup.Type] {
-        [COM.self, DataGroup1.self, DataGroup2.self,
-         NotImplementedDG.self, NotImplementedDG.self, NotImplementedDG.self,
-         NotImplementedDG.self, DataGroup7.self, NotImplementedDG.self,
-         NotImplementedDG.self, NotImplementedDG.self, DataGroup11.self,
-         DataGroup12.self, NotImplementedDG.self, DataGroup14.self,
-         DataGroup15.self, NotImplementedDG.self, SOD.self].enumerated().map { (offset, dataGroupClass) in
-            let name = dataGroupNames[offset]
-            let tag = tags[offset]
-            return injectDataGroupHandler?(name, tag, dataGroupClass) ?? dataGroupClass
+    private static let classes : [DataGroup.Type] = [COM.self, DataGroup1.self, DataGroup2.self,
+                                      NotImplementedDG.self, NotImplementedDG.self, NotImplementedDG.self,
+                                      NotImplementedDG.self, DataGroup7.self, NotImplementedDG.self,
+                                      NotImplementedDG.self, NotImplementedDG.self, DataGroup11.self,
+                                      DataGroup12.self, NotImplementedDG.self, DataGroup14.self,
+                                      DataGroup15.self, NotImplementedDG.self, SOD.self]
+    
+    var classes : [DataGroup.Type] {
+        guard let injectDataGroupHandler = injectDataGroupHandler else {
+            return Self.classes
+        }
+        return Self.classes.enumerated().map { (offset, dataGroupClass) in
+            let name = Self.dataGroupNames[offset]
+            let tag = Self.tags[offset]
+            return injectDataGroupHandler(name, tag, dataGroupClass) ?? dataGroupClass
         }
     }
-// FACEKOM:: MODIFICATION BEGIN
     
+// FACEKOM:: MODIFICATION END
     
     func parseDG( data : [UInt8] ) throws -> DataGroup {
         
@@ -49,6 +57,6 @@ class DataGroupParser {
     
     func tagToDG( _ tag : UInt8 ) throws -> DataGroup.Type {
         guard let index = DataGroupParser.tags.firstIndex(of: tag) else { throw NFCPassportReaderError.UnknownTag}
-        return DataGroupParser.classes[index]
+        return classes[index]
     }
 }

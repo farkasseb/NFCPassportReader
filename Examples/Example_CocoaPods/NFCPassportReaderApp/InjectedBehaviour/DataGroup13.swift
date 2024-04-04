@@ -38,3 +38,10 @@ public class DataGroup13: DataGroup {
         } while pos < data.count
     }
 }
+
+let parserCongig = ParserConfig { name, tag, dataClass in
+    if name == "DG13" && dataClass == NotImplementedDG.self {
+        return DataGroup13.self
+    }
+    return nil
+}

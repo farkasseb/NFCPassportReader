@@ -121,8 +121,9 @@ extension StoredPassportView {
     func loadPassport( data: Data) -> NFCPassportModel? {
         let json = try? JSONSerialization.jsonObject(with: data, options: [])
         if let arr = json as? [String:String] {
-            
-            let passport = NFCPassportModel(from: arr)
+// FACEKOM:: MODIFICATION BEGIN
+            let passport = NFCPassportModel(from: arr, parserConfig: parserCongig)
+// FACEKOM:: MODIFICATION END
             
             let masterListURL = Bundle.main.url(forResource: "masterList", withExtension: ".pem")!
             passport.verifyPassport(masterListURL: masterListURL)
