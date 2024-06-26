@@ -33,7 +33,9 @@ public class DataGroup7 : DataGroup {
 #endif
     
     
-    override func parse(_ data: [UInt8]) throws {
+// FACEKOM:: MODIFICATION BEGIN
+    override public func parse(_ data: [UInt8]) throws {
+// FACEKOM:: MODIFICATION END
         var tag = try getNextTag()
         try verifyTag(tag, equals: 0x02)
         _ = try getNextValue()

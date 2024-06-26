@@ -52,7 +52,9 @@ func getImage() -> UIImage? {
         try super.init(data)
     }
 
-    override func parse(_ data: [UInt8]) throws {
+// FACEKOM:: MODIFICATION BEGIN
+    override public func parse(_ data: [UInt8]) throws {
+// FACEKOM:: MODIFICATION END
         var tag = try getNextTag()
         try verifyTag(tag, equals: 0x7F61)
         _ = try getNextLength()

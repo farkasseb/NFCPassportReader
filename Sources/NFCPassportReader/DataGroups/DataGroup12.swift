@@ -24,7 +24,9 @@ public class DataGroup12 : DataGroup {
         try super.init(data)
     }
 
-    override func parse(_ data: [UInt8]) throws {
+// FACEKOM:: MODIFICATION BEGIN
+    override public func parse(_ data: [UInt8]) throws {
+// FACEKOM:: MODIFICATION END
         var tag = try getNextTag()
         try verifyTag(tag, equals: 0x5C)
 

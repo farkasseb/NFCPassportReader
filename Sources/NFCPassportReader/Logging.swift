@@ -9,10 +9,6 @@
 import Foundation
 import OSLog
 
-//func cprint(_: String) {
-//    
-//}
-
 // FACEKOM:: MODIFICATION BEGIN
 fileprivate extension os.Logger {
     /// Using your bundle identifier is a great way to ensure a unique identifier.
@@ -36,7 +32,41 @@ fileprivate extension os.Logger {
 
 // FACEKOM::Hint: Logger proxy to avoid the rest of the code 
 // from unnecessary changes when merging changes back from the original maintainer
-struct Logger {
+public struct Logger {
+    public enum Level : Int, CaseIterable {
+        case `default` = 0
+        case info = 1
+        case debug = 2
+        case error = 3
+        case fault = 4
+        fileprivate init(oslogType: OSLogType) {
+            self = switch oslogType {
+            case .default:
+                .default
+            case .info:
+                .info
+            case .debug:
+                .debug
+            case .error:
+                .error
+            case .fault:
+                .fault
+            default:
+                .default
+            }
+        }
+    }
+    
+    public struct Config {
+        public typealias CustomLogHandler = (_ level: Level, _ message: () -> String) -> ()
+        public enum Mode {
+            case osLog
+            case custom(CustomLogHandler)
+            case noLogging
+        }
+        public static var mode = Mode.noLogging
+    }
+    
     private let osLogger: os.Logger
     
     private init(osLogger: os.Logger) {
@@ -62,8 +92,15 @@ struct Logger {
     }
     
     func log(level: OSLogType, _ message: () -> String) {
-        let msg = message()
-        osLogger.log(level: level, "\(msg)")
+        switch Self.Config.mode {
+        case .osLog:
+            let msg = message()
+            osLogger.log(level: level, "\(msg)")
+        case .custom(let handler):
+            handler(Level(oslogType: level), message)
+        case .noLogging:
+            break
+        }
     }
 
     func trace(_ message: @autoclosure () -> String) {
@@ -99,49 +136,3 @@ struct Logger {
     }
 }
 // FACEKOM:: MODIFICATION END
-
-
-// TODO: Quick log functions - will move this to something better
-public enum LogLevel : Int, CaseIterable {
-    case verbose = 0
-    case debug = 1
-    case info = 2
-    case warning = 3
-    case error = 4
-}
-
-public class Log {
-    public static var logLevel : LogLevel = .info
-    public static var storeLogs = false
-    public static var logData = [String]()
-
-    public class func verbose( _ msg : @autoclosure () -> String ) {
-        log( .verbose, msg )
-    }
-    public class func debug( _ msg : @autoclosure () -> String ) {
-        log( .debug, msg )
-    }
-    public class func info( _ msg : @autoclosure () -> String ) {
-        log( .info, msg )
-    }
-    public class func warning( _ msg : @autoclosure () -> String ) {
-        log( .warning, msg )
-    }
-    public class func error( _ msg : @autoclosure () -> String ) {
-        log( .error, msg )
-    }
-    
-    public class func clearStoredLogs() {
-        logData.removeAll()
-    }
-    
-    class func log( _ logLevel : LogLevel, _ msg : () -> String ) {
-        if self.logLevel.rawValue <= logLevel.rawValue {
-            let message = msg()
-            
-            if storeLogs {
-                logData.append( message )
-            }
-        }
-    }
-}

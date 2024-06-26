@@ -39,6 +39,7 @@
 		A1FDC53225D3F19E00D22FF4 /* ViewModifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1FDC53125D3F19E00D22FF4 /* ViewModifiers.swift */; };
 		A1FDC53425D3F1DE00D22FF4 /* CheckBoxView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1FDC53325D3F1DE00D22FF4 /* CheckBoxView.swift */; };
 		A1FDC53625D43AB400D22FF4 /* MRZEntryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1FDC53525D43AB400D22FF4 /* MRZEntryView.swift */; };
+		ED5A86DE2BBD64A5000FEAAF /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED5A86DC2BBD63B7000FEAAF /* Log.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -89,6 +90,7 @@
 		A1FDC53125D3F19E00D22FF4 /* ViewModifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModifiers.swift; sourceTree = "<group>"; };
 		A1FDC53325D3F1DE00D22FF4 /* CheckBoxView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckBoxView.swift; sourceTree = "<group>"; };
 		A1FDC53525D43AB400D22FF4 /* MRZEntryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MRZEntryView.swift; sourceTree = "<group>"; };
+		ED5A86DC2BBD63B7000FEAAF /* Log.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Log.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -164,6 +166,7 @@
 				A1CE83B022C91DF100E3EACF /* Views */,
 				A16EB23022A9E9E10008F53F /* AppDelegate.swift */,
 				A16EB23222A9E9E10008F53F /* SceneDelegate.swift */,
+				ED5A86DC2BBD63B7000FEAAF /* Log.swift */,
 				A16EB23922A9E9E20008F53F /* Assets.xcassets */,
 				A16EB23B22A9E9E20008F53F /* LaunchScreen.storyboard */,
 				A16EB23E22A9E9E20008F53F /* Info.plist */,
@@ -369,6 +372,7 @@
 			files = (
 				A1EBC5252370BAB2004DD19E /* NFCPassportReaderTests.swift in Sources */,
 				A17375F525F78B0D005995DA /* PACETests.swift in Sources */,
+				ED5A86DE2BBD64A5000FEAAF /* Log.swift in Sources */,
 				A1EBC5242370BAB2004DD19E /* DataGroupParsingTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -146,6 +146,17 @@ extension MainView {
 //        let dataGroups : [DataGroupId] = [.COM, .SOD, .DG1, .DG2, .DG7, .DG11, .DG12, .DG14, .DG15]
 //        passportReader.readPassport(mrzKey: mrzKey, tags:dataGroups, completed: { (passport, error) in
         
+// FACEKOM:: MODIFICATION BEGIN
+
+//        Logger.Config.mode = .custom({ level, message in
+//            Log.log(LogLevel(rawValue: level.rawValue) ?? .verbose, message)
+//        })
+        
+        Logger.Config.mode = .osLog
+        
+// FACEKOM:: MODIFICATION END
+
+        
         Log.logLevel = settings.logLevel
         Log.storeLogs = settings.shouldCaptureLogs
         Log.clearStoredLogs()
@@ -164,7 +175,7 @@ extension MainView {
             }
 
             do {
-                let passport = try await passportReader.readPassport( mrzKey: mrzKey, customDisplayMessage:customMessageHandler)
+                let passport = try await passportReader.readPassport( mrzKey: mrzKey, parserConfig: parserCongig, customDisplayMessage:customMessageHandler)
                 
                 if settings.savePassportOnScan {
                     // Save passport

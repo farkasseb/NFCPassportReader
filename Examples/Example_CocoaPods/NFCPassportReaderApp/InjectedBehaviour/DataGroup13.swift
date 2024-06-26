@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import NFCPassportReader
 
 @available(iOS 13, macOS 10.15, *)
 public class DataGroup13: DataGroup {
@@ -18,7 +19,7 @@ public class DataGroup13: DataGroup {
         try super.init(data)
     }
     
-    override func parse(_ data: [UInt8]) throws {
+    public override func parse(_ data: [UInt8]) throws {
         var tag = try getNextTag()
         if tag != 0x5C {
             throw NFCPassportReaderError.InvalidResponse(dataGroupId: .DG13, expectedTag: 0x5C, actualTag: tag)
@@ -36,4 +37,11 @@ public class DataGroup13: DataGroup {
             }
         } while pos < data.count
     }
+}
+
+let parserCongig = ParserConfig { name, tag, dataClass in
+    if name == "DG13" && dataClass == NotImplementedDG.self {
+        return DataGroup13.self
+    }
+    return nil
 }
