@@ -1,7 +1,7 @@
 Pod::Spec.new do |spec|
 
   spec.name         = "NFCPassportReader"
-  spec.version      = "2.1.1-facekom"
+  spec.version      = "2.1.2-facekom"
   spec.summary      = "This package handles reading an NFC Enabled passport using iOS 13 CoreNFC APIS"
 
   spec.homepage     = "https://github.com/TechTeamer/NFCPassportReader"
@@ -22,9 +22,5 @@ Pod::Spec.new do |spec|
     'BUILD_LIBRARY_FOR_DISTRIBUTION' => 'YES'
   }
 
-  spec.pod_target_xcconfig = {
-    'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64'
-  }
-  spec.user_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' }
 
 end
