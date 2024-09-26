@@ -54,7 +54,9 @@ struct PassportView_Previews : PreviewProvider {
            let data = try? Data(contentsOf: file),
            let json = try? JSONSerialization.jsonObject(with: data, options: []),
            let arr = json as? [String:String] {
-            passport = NFCPassportModel(from: arr)
+// FACEKOM:: MODIFICATION BEGIN
+            passport = NFCPassportModel(from: arr, parserConfig: parserCongig)
+// FACEKOM:: MODIFICATION END
         } else {
             passport = NFCPassportModel()
         }
